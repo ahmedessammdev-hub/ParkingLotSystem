@@ -1,0 +1,222 @@
+{
+	"info": {
+		"_postman_id": "422e1b12-9c3a-4e3b-85ea-27b34e5691d1",
+		"name": "Parking Lot System API",
+		"description": "A comprehensive Postman Collection to test the Parking Lot System API. This collection contains all endpoints grouped logically, with detailed descriptions, variables, and automatic Token configuration.",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Auth",
+			"description": "Endpoints related to Authentication and Authorization.",
+			"item": [
+				{
+					"name": "Login",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = pm.response.json();",
+									"if(jsonData.token) {",
+									"    pm.environment.set(\"token\", jsonData.token);",
+									"    pm.collectionVariables.set(\"token\", jsonData.token);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"username\": \"admin\",\r\n    \"password\": \"admin123\"\r\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/auth/login",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"auth",
+								"login"
+							]
+						},
+						"description": "Login to receive a JWT Token. The attached script automatically extracts the Token from the response and updates the `token` variable to be used in other protected endpoints.\n\n**Default Credentials:**\n- Username: admin\n- Password: admin123"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Parking",
+			"description": "Endpoints related to parking management (Park, Exit, History, Active Vehicles).",
+			"item": [
+				{
+					"name": "Park Vehicle",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"licensePlate\": \"ABC-1234\",\r\n    \"ownerName\": \"Ahmed Essam\",\r\n    \"vehicleType\": 1,\r\n    \"feeType\": 0\r\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/parking/park",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"parking",
+								"park"
+							]
+						},
+						"description": "Check-in a new vehicle to the parking lot and generate a ticket.\nThis endpoint is protected and requires a Bearer Token.\n\n**VehicleType Values:**\n0 = Motorcycle\n1 = Car\n2 = Truck\n\n**FeeType Values:**\n0 = Hourly\n1 = Daily\n2 = Flat"
+					},
+					"response": []
+				},
+				{
+					"name": "Exit Vehicle",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/parking/exit/1",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"parking",
+								"exit",
+								"1"
+							]
+						},
+						"description": "Checkout a vehicle from the parking lot and calculate the final fee based on the ticket.\nReplace `1` in the URL with the correct `ticketId`.\nThis endpoint is protected and requires a Bearer Token."
+					},
+					"response": []
+				},
+				{
+					"name": "Get Active Vehicles",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/parking/active?pageNumber=1&pageSize=10",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"parking",
+								"active"
+							],
+							"query": [
+								{
+									"key": "pageNumber",
+									"value": "1",
+									"description": "Page number (Default: 1)"
+								},
+								{
+									"key": "pageSize",
+									"value": "10",
+									"description": "Number of items per page (Default: 10)"
+								}
+							]
+						},
+						"description": "Retrieve a list of all vehicles currently active inside the parking lot. Supports pagination."
+					},
+					"response": []
+				},
+				{
+					"name": "Get Ticket By Id",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/parking/ticket/1",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"parking",
+								"ticket",
+								"1"
+							]
+						},
+						"description": "Fetch details of a specific ticket using its ID.\nReplace `1` with the target `ticketId`."
+					},
+					"response": []
+				},
+				{
+					"name": "Get Vehicle History",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/parking/history/ABC-1234",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"parking",
+								"history",
+								"ABC-1234"
+							]
+						},
+						"description": "Fetch the parking history (Check-ins and Check-outs) for a specific vehicle using its License Plate.\nReplace `ABC-1234` with the target License Plate."
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": "https://localhost:7152",
+			"type": "string"
+		},
+		{
+			"key": "token",
+			"value": "",
+			"type": "string"
+		}
+	]
+}
