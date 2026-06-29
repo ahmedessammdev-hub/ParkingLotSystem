@@ -251,3 +251,11 @@ dotnet run --project ParkingLotSystem.API
 ```
 *Note: Pending migrations will be evaluated and applied automatically to the database when the application starts up.*
 
+---
+
+## 8. Project Presentation & Slides
+
+The presentation slides summarizing the project architecture, design decisions, and system workflow are available in the repository:
+- **Presentation File**: [ParkingLotSystem_Final_V3.pptx](./slides/ParkingLotSystem_Final_V3.pptx)
+
+
